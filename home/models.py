@@ -2,7 +2,7 @@ from django.db import models
 
 from wagtail.core.models import Page
 from wagtail.admin.edit_handlers import FieldPanel, PageChooserPanel
-
+from blog.models import BlogPage
 
 class HomePage(Page):
     hero_title = models.CharField(
@@ -29,6 +29,11 @@ class HomePage(Page):
     	on_delete=models.SET_NULL,
     	help_text="Internal page link to send the user to article")
 
+    def get_context(self, request):
+    	context = super().get_context(request)
+    	featured_articles = BlogPage.objects.live().filter(featured=True)
+    	context['featured_articles'] = featured_articles
+    	return context
     # Configure admin interface
     content_panels = Page.content_panels + [
     	FieldPanel("hero_title"),
